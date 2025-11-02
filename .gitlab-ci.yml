@@ -1,10 +1,10 @@
 stages:
-  - build  # <--- ZUERST BAUEN
-  - test   # <--- DANACH TESTEN (LINTEN)
+  - build
+  - test
 
 # Vorlage für alle Jobs: Caching und Installation
 .setup-template: &setup
-  image: node:18-alpine
+  image: node:20-alpine  # <--- HIER IST DIE KORREKTUR
   cache:
     key:
       files:
@@ -16,23 +16,20 @@ stages:
     - npm install
 
 # 1. Job: BUILD (aus der 'build'-Stage)
-# Wird jetzt als Erstes ausgeführt.
 build-job:
   <<: *setup
   stage: build
   script:
     - echo "Building project with Vite..."
-    - npm run build # <--- Führt 'vite build' aus
+    - npm run build
   artifacts:
-    # Speichert den 'dist'-Ordner (Vites Ausgabe) als Artefakt
     paths:
       - teilzeit-ausbildungsrechner/dist/
 
 # 2. Job: LINTER (aus der 'test'-Stage)
-# Wird jetzt als Zweites ausgeführt, nach dem Build.
 lint-job:
   <<: *setup
   stage: test
   script:
     - echo "Running all linters..."
-    - npm run lint # <--- Ruft 'npm run lint:html && ...' usw. auf
+    - npm run lint
