@@ -4,7 +4,7 @@ stages:
 
 # Vorlage für alle Jobs: Caching und Installation
 .setup-template: &setup
-  image: node:20-alpine  # <--- HIER IST DIE KORREKTUR
+  image: node:20-alpine
   cache:
     key:
       files:
@@ -16,6 +16,7 @@ stages:
     - npm install
 
 # 1. Job: BUILD (aus der 'build'-Stage)
+# Wird zuerst ausgeführt
 build-job:
   <<: *setup
   stage: build
@@ -26,10 +27,26 @@ build-job:
     paths:
       - teilzeit-ausbildungsrechner/dist/
 
-# 2. Job: LINTER (aus der 'test'-Stage)
-lint-job:
+# 2. Jobs: LINTER (alle aus der 'test'-Stage)
+# Diese 3 Jobs laufen jetzt parallel, nachdem 'build-job' erfolgreich war.
+
+lint-html-job:
   <<: *setup
   stage: test
   script:
-    - echo "Running all linters..."
-    - npm run lint
+    - echo "Checking HTML..."
+    - npm run lint:html # Führt nur 'htmlhint .' aus
+
+lint-css-job:
+  <<: *setup
+  stage: test
+  script:
+    - echo "Checking CSS..."
+    - npm run lint:css # Führt nur 'stylelint "**/*.css"' aus
+
+lint-js-job:
+  <<: *setup
+  stage: test
+  script:
+    - echo "Checking JavaScript..."
+    - npm run lint:js # Führt nur 'eslint .' aus
