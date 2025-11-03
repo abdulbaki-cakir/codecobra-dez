@@ -29,16 +29,6 @@
 #calculator-section button.secondary { background-color: transparent; color: #000; }
 #calculator-section button.secondary:hover { background-color: #f4f4f4; }
 
-
-
-
-
-
-
-
-
-
-
 #calculator-section .progress-line-bg,
 #calculator-section .progress-line-fill {
     content: '';
