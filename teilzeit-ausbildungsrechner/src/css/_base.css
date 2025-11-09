@@ -4,7 +4,7 @@
 
 :root {
     --bg-color: #fff;
-    --text-color: #1a1a1a;
+    --text-color: #000000;
     --text-light: #555;
     --primary-button-bg: #0d2a57;
     --primary-button-text: #fff;
@@ -21,7 +21,7 @@
 }
 
 html {
-    scroll-behavior: smooth;
+    scroll-behavior: smooth !important;
     height: 100%;
 }
 
