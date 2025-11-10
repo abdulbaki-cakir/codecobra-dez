@@ -54,11 +54,25 @@ export function showStep(stepNumber) {
  * @param {number} currentStep - Der aktuell aktive Schritt
  */
 function updateProgress(currentStep) {
+    const progressLine = document.getElementById('progress-line');
     const progressSteps = document.querySelectorAll('.progress-container .step');
 
     progressSteps.forEach(step => {
         const stepNum = parseInt(step.dataset.step);
         step.classList.toggle('active', stepNum <= currentStep);
     });
+
+    let progressPercentage = 0;
+    if (currentStep === 1) {
+        progressPercentage = 20; 
+    } else if (currentStep === 2) {
+        progressPercentage = 50;
+    } else {
+        progressPercentage = 100;
+    }
+
+    if (progressLine) {
+        progressLine.style.width = progressPercentage + '%';
+    }
 
 }
