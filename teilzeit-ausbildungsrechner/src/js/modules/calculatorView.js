@@ -17,6 +17,8 @@ export function getFormInputs() {
     const el = document.getElementById(id);
     if (el) selections[id] = el.value;
   });
+  // Hinweis: Diese Funktion war in beiden Versionen unvollständig und
+  // liest nur die Verkürzungsgründe aus, nicht die Basis-Daten.
 }
 /**
  * Verknüpft Radio-Buttons mit einem versteckten Select-Feld.
@@ -54,9 +56,9 @@ export function showStep(stepNumber) {
 
 /**
  * Richtet das Ein-/Ausblenden des "Monate in Vollzeit"-Feldes ein.
+ * (Aus V1 übernommen)
  */
 export const setupPartTimeSwitch = () => {
-  // ... (Code bleibt gleich) ...
   const radios = document.querySelectorAll(
     'input[name="part-time-start-radio"]',
   );
@@ -99,13 +101,28 @@ export const setupPartTimeSwitch = () => {
 
 /**
  * Aktualisiert die Fortschrittsanzeige (Punkte und Linie).
+ * (Aus V2 übernommen)
  * @param {number} currentStep - Der aktuell aktive Schritt
  */
 function updateProgress(currentStep) {
+  const progressLine = document.getElementById("progress-line");
   const progressSteps = document.querySelectorAll(".progress-container .step");
 
   progressSteps.forEach((step) => {
     const stepNum = parseInt(step.dataset.step);
     step.classList.toggle("active", stepNum <= currentStep);
   });
+
+  let progressPercentage = 0;
+  if (currentStep === 1) {
+    progressPercentage = 20; // Startet nicht bei 0, um "aktiv" zu wirken
+  } else if (currentStep === 2) {
+    progressPercentage = 50;
+  } else {
+    progressPercentage = 100;
+  }
+
+  if (progressLine) {
+    progressLine.style.width = progressPercentage + "%";
+  }
 }
