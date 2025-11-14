@@ -20,7 +20,7 @@ Um dieses Projekt als Docker-Container auszuf체hren, wird nur eine Software ben�
   [https://hub.docker.com/repository/docker/abcakir/codecobra-docker/general](https://hub.docker.com/repository/docker/abcakir/codecobra-docker/general)
 
 # Container starten
-F체hre diesen Befehl in deinem Terminal aus. Docker l채dt das Image automatisch herunter und startet es unter dem Namen `CodeCobra-TZR`.
+Starten sie "Docker Desktop" und f체hre diesen Befehl in deinem Terminal aus. Docker l채dt das Image automatisch herunter und startet es unter dem Namen `CodeCobra-TZR`.
 
 ```bash
 docker run -d -p 8080:80 --name CodeCobra-TZR abcakir/codecobra-docker:latest
