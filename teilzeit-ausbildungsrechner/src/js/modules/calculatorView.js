@@ -145,7 +145,7 @@ function updateProgress(currentStep) {
 }
 
 export function showSimpleResult(durationInMonths) {
-  const resultElement = document.getElementById("simple-result");
+  const resultElement = document.getElementById("extension-card-value");
   if (resultElement) {
     resultElement.textContent = `${durationInMonths} Monate`;
   }
