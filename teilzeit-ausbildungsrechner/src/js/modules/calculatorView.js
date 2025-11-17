@@ -6,7 +6,7 @@ import { resetVollzeitMonateValidation } from "./input-validation.js";
  * @returns {object} - Ein Objekt mit allen Rohwerten.
  */
 export function getFormInputs() {
-  // ... (Diese Funktion bleibt unverändert) ...
+  // 1. Hole alle <select>-Werte für die Anrechnung
   const selections = {};
   const reasonIds = [
     "age-select",
@@ -21,7 +21,17 @@ export function getFormInputs() {
     const el = document.getElementById(id);
     if (el) selections[id] = el.value;
   });
+
+  // 2. Hole die restlichen Werte
+    return {
+        originalDuration: parseInt(document.getElementById('ausbildungsdauer').value, 10),
+        fullTimeHours: parseInt(document.getElementById('vollzeitstunden').value, 10) || 40,
+        partTimeHours: parseInt(document.getElementById('wochenstunden').value, 10) || 0,
+        initialFullTimeMonths: parseInt(document.getElementById('vollzeit-monate').value, 10) || 0,
+        selections: selections // Übergibt das Objekt mit allen Select-Werten
+    };
 }
+
 /**
  * Verknüpft Radio-Buttons mit einem versteckten Select-Feld.
  */
@@ -131,5 +141,12 @@ function updateProgress(currentStep) {
 
   if (progressLine) {
     progressLine.style.width = progressPercentage + "%";
+  }
+}
+
+export function showSimpleResult(durationInMonths) {
+  const resultElement = document.getElementById("simple-result");
+  if (resultElement) {
+    resultElement.textContent = `${durationInMonths} Monate`;
   }
 }
