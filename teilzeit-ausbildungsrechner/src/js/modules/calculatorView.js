@@ -27,7 +27,7 @@ export function getFormInputs() {
       parseInt(document.getElementById("wochenstunden").value, 10) || 0,
     initialFullTimeMonths:
       parseInt(document.getElementById("vollzeit-monate").value, 10) || 0,
-    selections: selections,
+    selections,
   };
 }
 
@@ -132,7 +132,7 @@ export function renderResults(data) {
     initialFullTimeMonths,
     shorteningResult,
     officialShorteningMonths,
-    capWasHit_Shortening,
+    capWasHitShortening,
     remainingFullTimeEquivalent,
     finalExtensionMonths,
     finalTotalDuration,
@@ -188,7 +188,7 @@ export function renderResults(data) {
       '<p class="no-shortening-message">Keine Verkürzungsgründe ausgewählt.</p>';
   }
 
-  if (capWasHit_Shortening) {
+  if (capWasHitShortening) {
     const capMessage = document.createElement("p");
     capMessage.classList.add("cap-message");
     capMessage.innerHTML =

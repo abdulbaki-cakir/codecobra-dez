@@ -41,12 +41,12 @@ export function calculateShortening(selections, originalDuration) {
     (rule) => originalDuration >= rule.original,
   );
   const minimumDuration = durationRule.min;
-  const maxAllowedShortening_Legal = originalDuration - minimumDuration;
+  const maxAllowedShorteningLegal = originalDuration - minimumDuration;
 
   // 4. Finales Ergebnis (Minimum aus beiden Deckeln)
   const finalShortening = Math.min(
     shorteningAfterReasonCap,
-    maxAllowedShortening_Legal,
+    maxAllowedShorteningLegal,
   );
 
   // Prüft ob Deckel erreicht wurde
@@ -57,7 +57,7 @@ export function calculateShortening(selections, originalDuration) {
   return {
     totalShortening: finalShortening,
     details: detailedShorteningReasons,
-    capWasHit: capWasHit,
+    capWasHit,
   };
 }
 
@@ -118,9 +118,9 @@ export function calculateFinalResults(inputs) {
   );
 
   // 6. Reale Verlängerung / Gesamtdauer
-  let realExtensionMonths =
+  const realExtensionMonths =
     remainingPartTimeDuration - remainingFullTimeEquivalent;
-  let realTotalDuration = initialFullTimeMonths + remainingPartTimeDuration;
+  const realTotalDuration = initialFullTimeMonths + remainingPartTimeDuration;
 
   // 7. SONDERREGEL (Grace Period)
   const gracePeriod = RULES.general_rules.part_time_grace_period_months;
@@ -150,7 +150,7 @@ export function calculateFinalResults(inputs) {
     initialFullTimeMonths,
     shorteningResult,
     officialShorteningMonths,
-    capWasHit_Shortening: shorteningResult.capWasHit,
+    capWasHitShortening: shorteningResult.capWasHit,
     newFullTimeDuration,
     legalMinimumDuration,
     remainingFullTimeEquivalent,
