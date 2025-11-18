@@ -198,7 +198,7 @@ export function renderResults(data) {
         .querySelector(".radio-label");
       const reasonText = labelSpan ? labelSpan.textContent.trim() : "";
 
-      if (reasonText === "Hauptschulabschluss") {
+      if (reasonText == "Hauptschulabschluss") {
         shorteningResult.details.unshift({
           reason: reasonText,
           months: 0,
