@@ -2,16 +2,34 @@
 import * as View from "./calculatorView.js";
 import * as Validation from "./input-validation.js";
 import { initializeTooltips } from "./tooltips.js";
-// NEUER IMPORT der Scroll-Funktion
 import { scrollToCalculator } from "./navigation.js";
+import * as Service from "./calculatorService.js";
 
 let currentStep = 1;
+
+/**
+ * Haupt-Event-Handler für die Berechnung (auf "Weiter" in Schritt 2).
+ */
+function handleCalculation() {
+
+  const inputs = View.getFormInputs();
+
+  const result = Service.calculatePartTimeDuration(
+    inputs.originalDuration,
+    inputs.fullTimeHours,
+    inputs.partTimeHours
+  );
+
+  View.showSimpleResult(result);
+}
+
 
 /**
  * INITIALISIERUNG:
  * Startet die gesamte Logik für den Rechner.
  */
 export function initializeCalculator() {
+
   // --- 1. Button-Listener (Navigation & Aktionen) ---
   const nextBtn1 = document.getElementById("next-btn-1");
   const backBtn2 = document.getElementById("back-btn-2");
@@ -44,14 +62,11 @@ export function initializeCalculator() {
 
   if (nextBtn2) {
     nextBtn2.addEventListener("click", () => {
-      // HINWEIS: Hier muss noch deine Step 2 Validierung hin
-      const isStep2Valid = true; // Platzhalter
-
-      if (isStep2Valid) {
+        handleCalculation();
         currentStep = 3;
         View.showStep(currentStep);
         scrollToCalculator();
-      }
+      
     });
   }
 
