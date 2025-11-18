@@ -4,13 +4,17 @@
 export const RULES = {
   /**
    * Definiert die Anrechnungsgründe, ihre Werte und Anzeigetexte.
+   * isVariable: true  -> Fügt "bis zu" in der Anzeige hinzu (Ermessenssache/Variabel)
+   * isVariable: false -> Fester Wert (Pauschal)
    */
   reasons: {
     "age-select": {
       text: "Alter über 21 Jahre",
       value: 12,
+      isVariable: false, // Fest
     },
     "school-finish": {
+      isVariable: false, // Fest
       options: {
         0: { text: "Kein/Hauptschulabschluss", value: 0 },
         6: { text: "Mittlere Reife / Realschulabschluss", value: 6 },
@@ -20,22 +24,27 @@ export const RULES = {
     "experience-select": {
       text: "Erste Berufserfahrung / EQ",
       value: 12,
+      isVariable: true, // Variabel
     },
     "apprenticeship-select": {
       text: "Abgeschlossene Berufsausbildung",
       value: 12,
+      isVariable: true, // Variabel (Hängt von fachlicher Einschlägigkeit ab)
     },
     "study-select": {
       text: "Passende Studienleistungen",
       value: 12,
+      isVariable: true, // Variabel
     },
     "child-care-select": {
       text: "Betreuung eigener Kinder",
       value: 12,
+      isVariable: true, // Variabel
     },
     "family-care-select": {
       text: "Pflege naher Angehöriger",
       value: 12,
+      isVariable: true, // Variabel
     },
   },
 

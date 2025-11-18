@@ -180,7 +180,11 @@ export function renderResults(data) {
     shorteningResult.details.forEach((detail) => {
       const p = document.createElement("p");
       p.classList.add("detailed-shortening-item");
-      p.innerHTML = `${detail.reason}: <strong>- ${detail.months} Monate</strong>`;
+
+      //  Bedingte Anzeige von "bis zu" basierend auf der Config
+      const prefix = detail.isVariable ? "bis zu " : "";
+
+      p.innerHTML = `${detail.reason}: <strong>${prefix}${detail.months} Monate Verkürzung</strong>`;
       detailedShorteningsDiv.appendChild(p);
     });
   } else {

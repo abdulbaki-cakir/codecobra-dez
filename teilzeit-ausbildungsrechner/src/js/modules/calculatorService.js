@@ -22,7 +22,15 @@ export function calculateShortening(selections, originalDuration) {
     } else {
       reasonText = config.text;
     }
-    const currentReason = { reason: reasonText, months: currentValue };
+
+    // Prüfen ob der Grund variabel ist (Standard: false)
+    const isVariable = config.isVariable || false;
+
+    const currentReason = {
+      reason: reasonText,
+      months: currentValue,
+      isVariable: isVariable,
+    };
 
     potentialShortening += currentReason.months;
     detailedShorteningReasons.push(currentReason);
