@@ -29,7 +29,7 @@ export const RULES = {
     "apprenticeship-select": {
       text: "Abgeschlossene Berufsausbildung",
       value: 12,
-      isVariable: true, // Variabel (Hängt von fachlicher Einschlägigkeit ab)
+      isVariable: false, // Fest?
     },
     "study-select": {
       text: "Passende Studienleistungen",
