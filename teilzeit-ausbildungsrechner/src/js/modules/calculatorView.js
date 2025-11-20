@@ -21,10 +21,12 @@ export function getFormInputs() {
       document.getElementById("ausbildungsdauer").value,
       10,
     ),
+    // 💡 GEÄNDERT: parseFloat für Dezimalstunden
     fullTimeHours:
-      parseInt(document.getElementById("vollzeitstunden").value, 10) || 40,
+      parseFloat(document.getElementById("vollzeitstunden").value) || 40,
+    // 💡 GEÄNDERT: parseFloat für Dezimalstunden
     partTimeHours:
-      parseInt(document.getElementById("wochenstunden").value, 10) || 0,
+      parseFloat(document.getElementById("wochenstunden").value) || 0,
     initialFullTimeMonths:
       parseInt(document.getElementById("vollzeit-monate").value, 10) || 0,
     selections,
