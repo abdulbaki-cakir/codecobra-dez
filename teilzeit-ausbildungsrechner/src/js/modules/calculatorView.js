@@ -22,9 +22,9 @@ export function getFormInputs() {
       10,
     ),
     fullTimeHours:
-      parseInt(document.getElementById("vollzeitstunden").value, 10) || 40,
+      parseFloat(document.getElementById("vollzeitstunden").value) || 40,
     partTimeHours:
-      parseInt(document.getElementById("wochenstunden").value, 10) || 0,
+      parseFloat(document.getElementById("wochenstunden").value) || 0,
     initialFullTimeMonths:
       parseInt(document.getElementById("vollzeit-monate").value, 10) || 0,
     selections,
@@ -137,9 +137,14 @@ export function renderResults(data) {
     finalExtensionMonths,
     finalTotalDuration,
     gracePeriod,
+    legalMinimumDuration,
   } = data;
 
   const partTimeCard = document.querySelector(".part-time-card");
+  const partTimeCardLeft = partTimeCard
+    ? partTimeCard.querySelector(".result-card-left")
+    : null;
+  const finalResultBox = document.querySelector(".final-result-box");
 
   // 1. "Geleistete Zeit"-Karte
   const servedTimeCard = document.querySelector(".served-time-card");
@@ -207,7 +212,6 @@ export function renderResults(data) {
       }
     }
   }
-  // --- FIX ENDE ---
 
   if (shorteningResult.details.length > 0) {
     shorteningResult.details.forEach((detail) => {
@@ -246,7 +250,7 @@ export function renderResults(data) {
     newFullTimeCard.style.display = "flex";
     newFullTimeValue.textContent = remainingFullTimeEquivalent;
     document.getElementById("detailed-new-full-time-card").innerHTML =
-      "<p>Dies ist die verbleibende Restdauer in Vollzeit (nach Anrechnung und Abzug der geleisteten Zeit).</p>";
+      "<p>Dies ist die verbleibende Restdauer in Vollzeit (nach Anrechnung aller Verkürzungsgründe und Abzug der bereits geleisteten Zeit).</p>";
   }
 
   // 4. Teilzeit-Verlängerungs-Karte
@@ -261,23 +265,90 @@ export function renderResults(data) {
     partTimeDetailsDiv.innerHTML = "";
 
     if (finalExtensionMonths === 0) {
-      partTimeDetailsDiv.innerHTML = `<p class="detailed-part-time-item">Die Reduzierung auf <strong>${partTimeHours}h</strong> führt zu einer geringfügigen Verlängerung von ≤ ${gracePeriod} Monaten, die in der Praxis oft ignoriert wird.</p>`;
+      partTimeDetailsDiv.innerHTML = `<p class="detailed-part-time-item">Die Reduzierung der wöchentlichen Arbeitszeit von <strong>${fullTimeHours.toFixed(1)}h</strong> auf <strong>${partTimeHours.toFixed(1)}h</strong> führt zu einer geringfügigen Verlängerung von ≤ ${gracePeriod} Monaten, die in der Praxis oft ignoriert wird.</p>`;
     } else {
-      partTimeDetailsDiv.innerHTML = `<p class="detailed-part-time-item">Die Reduzierung der wöchentlichen Arbeitszeit von <strong>${fullTimeHours}h</strong> auf <strong>${partTimeHours}h</strong> für die verbleibende Dauer führt zu einer Verlängerung <strong>um ${finalExtensionMonths} Monate</strong>.</p>`;
+      partTimeDetailsDiv.innerHTML = `<p class="detailed-part-time-item">Die Reduzierung der wöchentlichen Arbeitszeit von <strong>${fullTimeHours.toFixed(1)}h</strong> auf <strong>${partTimeHours.toFixed(1)}h</strong> für die verbleibende Dauer führt zu einer Verlängerung <strong>um ${finalExtensionMonths} Monate</strong>.</p>`;
     }
-
     document.getElementById("final-duration-result").textContent =
       `${finalTotalDuration} Monate`;
   } else {
     partTimeCard.style.display = "none";
     document.getElementById("final-duration-result").textContent =
       `${finalTotalDuration} Monate`;
-  }
 
-  // Aufräumen alter Elemente
+    if (partTimeCardLeft) partTimeCardLeft.style.backgroundColor = "#1a1a1a";
+    if (finalResultBox) finalResultBox.style.backgroundColor = "#000";
+  }
+  // 5. Box für Durchschnittliche Arbeitszeit pro Tag
+  const resultsContainer = document.querySelector(".results-container");
   const existingBox = document.getElementById("average-hours-box");
+
   if (existingBox) existingBox.remove();
 
+  if (partTimeHoursAvailable) {
+    const averageBox = document.createElement("div");
+    averageBox.id = "average-hours-box";
+    averageBox.classList.add("result-card-info-box");
+
+    const icon = document.createElement("img");
+    icon.src = "./src/assets/icons/user-time.svg";
+    icon.alt = "Info Icon";
+    icon.classList.add("info-icon");
+
+    const textBox = document.createElement("div");
+    textBox.classList.add("info-box-text");
+
+    const avgFtText = document.createElement("p");
+    const avgPtText = document.createElement("p");
+
+    const avgFtDaily = (fullTimeHours / 5).toFixed(1).replace(".", ",");
+    const avgPtDaily = (partTimeHours / 5).toFixed(1).replace(".", ",");
+
+    avgFtText.innerHTML = `Durchschnittliche Arbeitszeit pro Tag (Vollzeit): <strong>${avgFtDaily} Stunden</strong>`;
+    avgPtText.innerHTML = `Durchschnittliche Arbeitszeit pro Tag (Teilzeit): <strong>${avgPtDaily} Stunden</strong>`;
+
+    textBox.appendChild(avgFtText);
+    textBox.appendChild(avgPtText);
+
+    averageBox.appendChild(icon);
+    averageBox.appendChild(textBox);
+
+    if (resultsContainer) {
+      resultsContainer.appendChild(averageBox);
+    }
+  }
+
+  // 6. Box für Vorzeitige Zulassung
   const existingEarlyBox = document.getElementById("early-admission-box");
   if (existingEarlyBox) existingEarlyBox.remove();
+
+  // Zeige nur, wenn FinalDuration - 6 >= LegalMinimumDuration
+  const earlyAdmissionAllowed = finalTotalDuration - 6 >= legalMinimumDuration;
+
+  if (earlyAdmissionAllowed) {
+    const earlyAdmissionBox = document.createElement("div");
+    earlyAdmissionBox.id = "early-admission-box";
+    earlyAdmissionBox.classList.add("result-card-info-box");
+
+    const icon = document.createElement("img");
+    icon.src = "./src/assets/icons/information.svg";
+    icon.alt = "Info Icon";
+    icon.classList.add("info-icon");
+
+    const earlyTextBox = document.createElement("div");
+    earlyTextBox.classList.add("info-box-text");
+
+    const earlyInfoText = document.createElement("p");
+
+    earlyInfoText.innerHTML =
+      "<strong>Hinweis zur vorzeitigen Zulassung:</strong><br>Eine zusätzliche Verkürzung um 6 Monate ist bei guten Leistungen <i>während</i> der Ausbildung möglich. Diese wird bei der zuständigen Stelle (z.B. IHK/HWK) beantragt und ist unabhängig von den hier berechneten Gründen.";
+
+    earlyTextBox.appendChild(earlyInfoText);
+    earlyAdmissionBox.appendChild(icon);
+    earlyAdmissionBox.appendChild(earlyTextBox);
+
+    if (resultsContainer) {
+      resultsContainer.appendChild(earlyAdmissionBox);
+    }
+  }
 }
