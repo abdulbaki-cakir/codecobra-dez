@@ -236,14 +236,20 @@ export function renderResults(data) {
       '<p class="no-shortening-message">Keine Verkürzungsgründe ausgewählt.</p>';
   }
 
-  if (capWasHitShortening) {
-    const capMessage = document.createElement("p");
-    capMessage.classList.add("cap-message");
-    capMessage.innerHTML =
-      "<i><strong>Hinweis: Maximal zulässige Verkürzung erreicht.</strong></i>";
-    detailedShorteningsDiv.appendChild(capMessage);
-  }
+if (capWasHitShortening) {
+  const capMessage = document.createElement("p");
+  capMessage.classList.add("cap-message");
 
+  capMessage.innerHTML = `
+    <i><strong>Hinweis: Maximal zulässige Verkürzung erreicht.</strong></i><br>
+    <strong style="color: #A50000;">
+      ⚠️ Achtung: Die Ausbildung darf höchstens um die Hälfte der Gesamtdauer verkürzt werden.
+    </strong>
+  `;
+
+  detailedShorteningsDiv.appendChild(capMessage);
+}
+    
   // 3. Neue Vollzeit-Karte
   const newFullTimeCard = document.querySelector(".new-full-time-card");
   const newFullTimeValue = document.getElementById("new-full-time-card-value");
