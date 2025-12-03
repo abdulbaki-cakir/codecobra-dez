@@ -139,6 +139,7 @@ export function renderResults(data) {
     finalTotalDuration,
     extensionCapWasHit,
     gracePeriod,
+    maxAllowedTotalDuration,
   } = data;
 
   const partTimeCard = document.querySelector(".part-time-card");
@@ -270,7 +271,16 @@ export function renderResults(data) {
 
     // Logik für die Anzeige der oberen Warnbox
     if (extensionCapWasHit) {
-      if (topErrorMsg) topErrorMsg.classList.remove("hidden");
+      if (topErrorMsg) {
+        topErrorMsg.classList.remove("hidden");
+
+        // --- NEU: Text dynamisch mit Variable setzen ---
+        topErrorMsg.innerHTML = `
+          <strong>⚠️ Achtung:</strong> Die Gesamtdauer darf höchstens um die Hälfte
+          der regulären Ausbildungsdauer verlängert werden (max. ${maxAllowedTotalDuration} Monate). <br />Lösung: Erhöhe die
+          Teilzeit-Stunden pro Woche.
+        `;
+      }
 
       if (partTimeCardLeft) partTimeCardLeft.style.backgroundColor = "#ba0000";
       if (finalResultBox) finalResultBox.style.backgroundColor = "#ba0000";
