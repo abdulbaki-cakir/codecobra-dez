@@ -27,28 +27,33 @@ build-job:
     - npm run build
   artifacts:
     paths:
-      # KORRIGIERTER PFAD:
       - teilzeit-ausbildungsrechner/dist/
-
-# --- STAGE: TEST ---
 
 lint-html-job:
   <<: *setup
-  stage: test
+  stage: build
   script:
     - npm run lint:html
 
 lint-css-job:
   <<: *setup
-  stage: test
+  stage: build
   script:
     - npm run lint:css
 
 lint-js-job:
   <<: *setup
-  stage: test
+  stage: build
   script:
     - npm run lint:js
+
+# --- STAGE: TEST ---
+
+unit-test-job:
+  <<: *setup
+  stage: test
+  script:
+    - npm test
 
 # --- STAGE: DOCKERHUB ---
 
