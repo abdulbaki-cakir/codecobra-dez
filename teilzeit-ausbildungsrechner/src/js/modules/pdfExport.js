@@ -11,7 +11,6 @@ export function setupPdfExport() {
 
     if (!target) return alert("Ergebnisbereich nicht gefunden");
 
-    // Zustand merken, Details ausklappen
     const wasHidden = detailsWrapper?.classList.contains("hidden");
     if (wasHidden) {
       detailsWrapper.classList.remove("hidden");
@@ -20,11 +19,10 @@ export function setupPdfExport() {
 
     await new Promise((resolve) => setTimeout(resolve, 200));
 
-    // Screenshot generieren
     const canvas = await window.html2canvas(target, { scale: 2 });
     const imgData = canvas.toDataURL("image/png");
 
-    // PDF-Objekt
+    // eslint-disable-next-line new-cap
     const pdf = new jsPDF("p", "mm", "a4");
 
     const pageWidth = pdf.internal.pageSize.getWidth();
@@ -48,7 +46,6 @@ export function setupPdfExport() {
 
     pdf.save("Ausbildungsrechner.pdf");
 
-    // Zustand zurücksetzen
     if (wasHidden) {
       detailsWrapper.classList.add("hidden");
       detailsBtn.textContent = "Detaillierte Erklärung anzeigen ▼";
