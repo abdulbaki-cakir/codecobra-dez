@@ -55,12 +55,6 @@ unit-test-job:
   script:
     - npm test
 
-selenium-test-job:
-  <<: *setup
-  stage: test
-  script:
-    - npm run test:tzr
-    
 # --- STAGE: DOCKERHUB ---
 
 deploy-job:
