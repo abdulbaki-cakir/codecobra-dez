@@ -9,7 +9,7 @@ import {
   initializeNavigation,
   initializeFooterNavigation,
 } from "./modules/navigation.js";
-import { initializeLanguageSwitcher } from "./modules/language";
+import { initializeLanguageSwitcher } from "./modules/language.js";
 
 // Hauptfunktion, die die App startet
 async function main() {
