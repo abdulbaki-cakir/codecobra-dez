@@ -1,30 +1,40 @@
 <!doctype html>
 <html lang="de">
   <head>
-    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title data-translate-key="page_title">Teilzeit-Ausbildungsrechner</title>
 
+    <!-- html2canvas CDN (Pflicht für PDF-Funktion, da ES-Import Probleme macht) -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+    <!-- Chart.js UMD CDN (Pflicht, da Vite bundling Fehler wirft bei Nicht-Modul-Skripten) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <!-- Styles -->
     <link rel="stylesheet" href="/src/css/_base.css" />
     <link rel="stylesheet" href="/src/css/_header.css" />
     <link rel="stylesheet" href="/src/css/_calculator.css" />
     <link rel="stylesheet" href="/src/css/_footer.css" />
     <link rel="stylesheet" href="/src/css/_input-validation.css" />
-
-    <script src="/src/js/chart.min.js"></script>
   </head>
+
   <body>
+    <!-- Header -->
     <div>{{> _header }}</div>
 
     <main>
       <section id="calculator-section">
-        <div class="container">{{> _rechner-formular }}</div>
+        <div class="container">
+          {{> _rechner-formular }}
+        </div>
       </section>
     </main>
 
+    <!-- Footer -->
     <div>{{> _footer }}</div>
 
+    <!-- Main Script (ES Module) -->
     <script src="/src/js/main.js" type="module"></script>
   </body>
 </html>

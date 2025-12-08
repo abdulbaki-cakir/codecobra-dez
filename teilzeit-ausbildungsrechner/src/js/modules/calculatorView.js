@@ -1,4 +1,3 @@
-import { jsPDF } from "jspdf";
 import { resetVollzeitMonateValidation } from "./input-validation.js";
 
 let myResultsChart = null;
@@ -76,17 +75,18 @@ function updateProgress(currentStep) {
   const progressSteps = document.querySelectorAll(".progress-container .step");
 
   progressSteps.forEach((step) => {
-    const stepNum = parseInt(step.dataset.step);
+    const stepNum = parseInt(step.dataset.step, 10);
     step.classList.toggle("active", stepNum <= currentStep);
   });
 
   let progressPercentage = 0;
+
   if (currentStep === 1) progressPercentage = 20;
   else if (currentStep === 2) progressPercentage = 50;
   else progressPercentage = 100;
 
   if (progressLine) {
-    progressLine.style.width = progressPercentage + "%";
+    progressLine.style.width = `${progressPercentage}%`;
   }
 }
 
@@ -136,7 +136,7 @@ export const setupPartTimeSwitch = () => {
 };
 
 /* ---------------------------------------------------------
-   RENDER RESULTS — KOMPLETT ERHALTEN
+   RENDER RESULTS
 --------------------------------------------------------- */
 export function renderResults(data) {
   const {
@@ -158,10 +158,6 @@ export function renderResults(data) {
     maxAllowedTotalDuration,
   } = data;
 
-  /* ---------------------------------------------------------
-       (DEINE GESAMTE ORIGINAL-LOGIK BLEIBT UNVERÄNDERT)
-  --------------------------------------------------------- */
-
   const partTimeCard = document.querySelector(".part-time-card");
   const partTimeCardLeft = partTimeCard
     ? partTimeCard.querySelector(".result-card-left")
@@ -169,14 +165,15 @@ export function renderResults(data) {
   const finalResultBox = document.querySelector(".final-result-box");
   const dailyHoursEl = document.getElementById("final-daily-hours");
 
+  // Globale Warnung
   const topErrorMsg = document.getElementById("global-cap-error");
 
+  // Vollzeit-Phase (geleistete Zeit / geplante Vollzeit)
   const servedTimeCard = document.querySelector(".served-time-card");
   const servedTimeValue = document.getElementById("served-card-value");
   const servedTimeDetailsDiv = document.getElementById(
     "detailed-served-time-card",
   );
-
   if (servedTimeCard && servedTimeValue && servedTimeDetailsDiv) {
     let noteElement = servedTimeDetailsDiv.querySelector(".cap-message");
     if (initialFullTimeMonths > 0) {
@@ -196,6 +193,7 @@ export function renderResults(data) {
     }
   }
 
+  // Verkürzungskarte
   document.getElementById("original-duration-header").textContent =
     `${originalDuration} Monate`;
   document.getElementById("shortening-card-value").textContent =
@@ -264,6 +262,7 @@ export function renderResults(data) {
     detailedShorteningsDiv.appendChild(capMessage);
   }
 
+  // Verbleibende Vollzeitdauer
   const newFullTimeCard = document.querySelector(".new-full-time-card");
   const newFullTimeValue = document.getElementById("new-full-time-card-value");
   if (newFullTimeCard && newFullTimeValue) {
@@ -273,20 +272,31 @@ export function renderResults(data) {
       "<p>Dies ist die verbleibende Restdauer in Vollzeit (nach Anrechnung aller Verkürzungsgründe und Abzug der bereits geleisteten Zeit).</p>";
   }
 
+  // Teilzeitkarte
   if (partTimeHoursAvailable) {
-    partTimeCard.style.display = "flex";
+    if (partTimeCard) partTimeCard.style.display = "flex";
     document.getElementById("extension-card-value").textContent =
       finalExtensionMonths;
     const partTimeDetailsDiv = document.getElementById(
       "detailed-part-time-card",
     );
 
-    partTimeDetailsDiv.innerHTML = "";
+    if (partTimeDetailsDiv) {
+      partTimeDetailsDiv.innerHTML = "";
 
-    if (finalExtensionMonths === 0) {
-      partTimeDetailsDiv.innerHTML = `<p class="detailed-part-time-item">Die Reduzierung der wöchentlichen Arbeitszeit von <strong>${fullTimeHours.toFixed(1)}h</strong> auf <strong>${partTimeHours.toFixed(1)}h</strong> führt zu einer geringfügigen Verlängerung von ≤ ${gracePeriod} Monaten, die in der Praxis oft ignoriert wird.</p>`;
-    } else {
-      partTimeDetailsDiv.innerHTML = `<p class="detailed-part-time-item">Die Reduzierung der wöchentlichen Arbeitszeit von <strong>${fullTimeHours.toFixed(1)}h</strong> auf <strong>${partTimeHours.toFixed(1)}h</strong> für die verbleibende Dauer führt zu einer Verlängerung <strong>um ${finalExtensionMonths} Monate</strong>.</p>`;
+      if (finalExtensionMonths === 0) {
+        partTimeDetailsDiv.innerHTML = `<p class="detailed-part-time-item">Die Reduzierung der wöchentlichen Arbeitszeit von <strong>${fullTimeHours.toFixed(
+          1,
+        )}h</strong> auf <strong>${partTimeHours.toFixed(
+          1,
+        )}h</strong> führt zu einer geringfügigen Verlängerung von ≤ ${gracePeriod} Monaten, die in der Praxis oft ignoriert wird.</p>`;
+      } else {
+        partTimeDetailsDiv.innerHTML = `<p class="detailed-part-time-item">Die Reduzierung der wöchentlichen Arbeitszeit von <strong>${fullTimeHours.toFixed(
+          1,
+        )}h</strong> auf <strong>${partTimeHours.toFixed(
+          1,
+        )}h</strong> für die verbleibende Dauer führt zu einer Verlängerung <strong>um ${finalExtensionMonths} Monate</strong>.</p>`;
+      }
     }
 
     if (extensionCapWasHit) {
@@ -301,7 +311,6 @@ export function renderResults(data) {
 
       if (partTimeCardLeft) partTimeCardLeft.style.backgroundColor = "#ba0000";
       if (finalResultBox) finalResultBox.style.backgroundColor = "#ba0000";
-
       if (dailyHoursEl) dailyHoursEl.style.display = "none";
     } else {
       if (topErrorMsg) topErrorMsg.classList.add("hidden");
@@ -310,11 +319,8 @@ export function renderResults(data) {
       if (finalResultBox) finalResultBox.style.backgroundColor = "#000";
 
       if (dailyHoursEl) {
-        const avgPtDaily = (partTimeHours / 5)
-          .toFixed(1)
-          .replace(".", ",");
-        dailyHoursEl.textContent =
-          `⌀ ${avgPtDaily} Stunden pro Tag (Teilzeit)`;
+        const avgPtDaily = (partTimeHours / 5).toFixed(1).replace(".", ",");
+        dailyHoursEl.textContent = `⌀ ${avgPtDaily} Stunden pro Tag (Teilzeit)`;
         dailyHoursEl.style.display = "block";
       }
     }
@@ -322,24 +328,23 @@ export function renderResults(data) {
     document.getElementById("final-duration-result").textContent =
       `${finalTotalDuration} Monate`;
   } else {
-    partTimeCard.style.display = "none";
+    if (partTimeCard) partTimeCard.style.display = "none";
     document.getElementById("final-duration-result").textContent =
       `${finalTotalDuration} Monate`;
 
     if (partTimeCardLeft) partTimeCardLeft.style.backgroundColor = "#1a1a1a";
     if (finalResultBox) finalResultBox.style.backgroundColor = "#000";
-
     if (dailyHoursEl) dailyHoursEl.style.display = "none";
   }
 
+  // Hinweis zur vorzeitigen Zulassung
   const existingEarlyBox = document.getElementById("early-admission-box");
   if (existingEarlyBox) existingEarlyBox.remove();
 
   const resultsContainer = document.querySelector(".results-container");
 
   const earlyAdmissionAllowed =
-    finalTotalDuration - 6 >= legalMinimumDuration &&
-    !extensionCapWasHit;
+    finalTotalDuration - 6 >= legalMinimumDuration && !extensionCapWasHit;
 
   if (earlyAdmissionAllowed) {
     const earlyAdmissionBox = document.createElement("div");
@@ -367,9 +372,7 @@ export function renderResults(data) {
     }
   }
 
-  /* ---------------------------------------------------------
-     CHART RENDERING (MIT ESLINT FIX)
-  --------------------------------------------------------- */
+  // CHART
   const canvas = document.getElementById("results-chart");
 
   if (canvas) {
@@ -401,11 +404,7 @@ export function renderResults(data) {
                   "#2A5D67",
                   "rgba(15, 15, 15, 0.8)",
                 ],
-                borderColor: [
-                  "#6EC6C5",
-                  "#2A5D67",
-                  "rgba(15, 15, 15, 1)",
-                ],
+                borderColor: ["#6EC6C5", "#2A5D67", "rgba(15, 15, 15, 1)"],
                 borderWidth: 1,
               },
             ],
@@ -416,10 +415,7 @@ export function renderResults(data) {
             maintainAspectRatio: false,
             plugins: {
               legend: { display: false },
-              title: {
-                display: true,
-                text: "Ausbildungsdauer im Überblick",
-              },
+              title: { display: true, text: "Ausbildungsdauer im Überblick" },
             },
             scales: {
               x: { ticks: { autoSkip: false } },
@@ -437,43 +433,6 @@ export function renderResults(data) {
       console.warn("Chart.js ist nicht geladen.");
     }
   }
-
-  /* ---------------------------------------------------------
-     PDF EXPORT AKTIVIEREN
-  --------------------------------------------------------- */
-  setupPdfExport();
-}
-
-/* ---------------------------------------------------------
-   PDF EXPORT – NUTZT window.html2canvas (CDN!)
---------------------------------------------------------- */
-function setupPdfExport() {
-  const btn = document.querySelector(".pdf-btn");
-
-  if (!btn) {
-    console.warn("PDF-Button nicht gefunden (.pdf-btn)");
-    return;
-  }
-
-  btn.addEventListener("click", async () => {
-    const target = document.querySelector(".results-container");
-    if (!target) {
-      alert("Ergebnisbereich nicht gefunden");
-      return;
-    }
-
-    // WICHTIG: html2canvas via CDN verwenden
-    const canvas = await window.html2canvas(target, { scale: 2 });
-    const imgData = canvas.toDataURL("image/png");
-
-    const pdf = new jsPDF("p", "mm", "a4");
-    const width = pdf.internal.pageSize.getWidth();
-    const imgProps = pdf.getImageProperties(imgData);
-    const height = (imgProps.height * width) / imgProps.width;
-
-    pdf.addImage(imgData, "PNG", 0, 0, width, height);
-    pdf.save("Ausbildungsrechner.pdf");
-  });
 }
 
 /* ---------------------------------------------------------
