@@ -5,10 +5,6 @@ import {
   initializeFooterNavigation,
 } from "./modules/navigation.js";
 import { initializeLanguageSwitcher } from "./modules/language.js";
-import {
-  initializeEasyLanguage,
-  synchronizeDetailsToggle,
-} from "./modules/easyLanguage.js";
 
 // Hauptfunktion, die die App startet
 async function main() {
@@ -23,8 +19,6 @@ async function main() {
     initializeNavigation();
     initializeFooterNavigation();
     initializeLanguageSwitcher();
-    initializeEasyLanguage();
-    synchronizeDetailsToggle();
   }, 0);
 }
 
