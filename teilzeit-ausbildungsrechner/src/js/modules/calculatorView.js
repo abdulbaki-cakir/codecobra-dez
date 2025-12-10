@@ -423,10 +423,16 @@ export function setupDetailsToggle() {
         wrapper.classList.remove("hidden");
         container.classList.add("open");
         btn.textContent = "Detaillierte Erklärung einklappen ▲";
+        window.dispatchEvent(
+          new CustomEvent("detailsToggleChanged", { detail: { open: true } })
+        );
       } else {
         wrapper.classList.add("hidden");
         container.classList.remove("open");
         btn.textContent = "Detaillierte Erklärung anzeigen ▼";
+        window.dispatchEvent(
+          new CustomEvent("detailsToggleChanged", { detail: { open: false } })
+        );
       }
     });
   }
