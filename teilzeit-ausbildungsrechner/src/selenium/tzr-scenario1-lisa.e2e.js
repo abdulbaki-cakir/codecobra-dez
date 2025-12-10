@@ -1,5 +1,5 @@
-import { Builder } from 'selenium-webdriver';
 import {
+  createDriver,
   waitVisibleById,
   typeNumberById,
   clickRadioByNameAndValue,
@@ -9,7 +9,7 @@ import {
 const BASE_URL = process.env.TZR_BASE_URL ?? 'http://localhost:5173';
 
 export async function runScenarioLisa() {
-  const driver = await new Builder().forBrowser('chrome').build();
+  const driver = await createDriver();
 
   try {
     console.log('Starte Szenario 1 – Bürokauffrau mit Kleinkind (Lisa, 23).');
@@ -99,4 +99,8 @@ export async function runScenarioLisa() {
   }
 }
 
-runScenarioLisa();
+if (import.meta.url === `file://${process.argv[1]}`) {
+  runScenarioLisa().catch(() => {
+    process.exitCode = 1;
+  });
+}

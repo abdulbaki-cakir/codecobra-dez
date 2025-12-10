@@ -1,6 +1,6 @@
-// src/__tests__/selenium/tzr-test.js
-import { Builder } from 'selenium-webdriver';
+// src/selenium/tzr-test.js
 import {
+  createDriver,
   waitVisibleById,
   typeNumberById,
   clickRadioByNameAndValue,
@@ -10,8 +10,8 @@ import {
 const BASE_URL = process.env.TZR_BASE_URL ?? 'http://localhost:5173';
 
 export async function runTzrE2eTest() {
-  const driver = await new Builder().forBrowser('MicrosoftEdge').build();
-  
+  const driver = await createDriver();
+
   try {
     console.log(`Starte TZR-E2E-Test auf ${BASE_URL}`);
     await driver.get(BASE_URL);
@@ -72,4 +72,8 @@ export async function runTzrE2eTest() {
   }
 }
 
-runTzrE2eTest();
+if (import.meta.url === `file://${process.argv[1]}`) {
+  runTzrE2eTest().catch(() => {
+    process.exitCode = 1;
+  });
+}

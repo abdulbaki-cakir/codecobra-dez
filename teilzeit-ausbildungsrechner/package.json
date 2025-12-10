@@ -5,9 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "test:selenium:tzr": "node src/selenium/tzr.js",
-    "test:selenium:lisa": "node src/selenium/tzr-scenario1-lisa.js",
-    "test:selenium:all": "node src/selenium/selenium-all.js",
+    "test:selenium:tzr": "node src/selenium/tzr.e2e.js",
+    "test:selenium:lisa": "node src/selenium/tzr-scenario1-lisa.e2e.js",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",

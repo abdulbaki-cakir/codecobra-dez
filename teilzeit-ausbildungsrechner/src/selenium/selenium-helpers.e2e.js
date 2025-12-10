@@ -1,6 +1,5 @@
 import { Builder, By, until } from 'selenium-webdriver';
 
-
 const DEFAULT_TIMEOUT = 10_000;
 
 export function createDriver() {
