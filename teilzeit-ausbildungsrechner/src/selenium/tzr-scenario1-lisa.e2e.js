@@ -4,7 +4,7 @@ import {
   typeNumberById,
   clickRadioByNameAndValue,
   clickButtonById,
-} from './selenium-helpers.js';
+} from './selenium-helpers.e2e.js';
 
 const BASE_URL = process.env.TZR_BASE_URL ?? 'http://localhost:5173';
 
