@@ -5,24 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title data-translate-key="page_title">Teilzeit-Ausbildungsrechner</title>
 
+    <!-- html2canvas (für PDF-Screenshot) -->
+    <script src="/src/js/html2canvas.min.js"></script>
+
+    <!-- jsPDF (UMD – wird über window.jspdf.jsPDF verwendet) -->
+    <script src="/src/js/chart.min.js"></script>
+
+    <script src="/src/js/jspdf.umd.min.js.map"></script>
+
+    <!-- Styles -->
     <link rel="stylesheet" href="/src/css/_base.css" />
     <link rel="stylesheet" href="/src/css/_header.css" />
     <link rel="stylesheet" href="/src/css/_calculator.css" />
     <link rel="stylesheet" href="/src/css/_footer.css" />
     <link rel="stylesheet" href="/src/css/_input-validation.css" />
-
   </head>
+
   <body>
+    <!-- Header -->
     <div>{{> _header }}</div>
 
     <main>
       <section id="calculator-section">
-        <div class="container">{{> _rechner-formular }}</div>
+        <div class="container">
+          {{> _rechner-formular }}
+        </div>
       </section>
     </main>
 
+    <!-- Footer -->
     <div>{{> _footer }}</div>
 
+    <!-- Main Script (ES Module) -->
     <script src="/src/js/main.js" type="module"></script>
   </body>
 </html>
