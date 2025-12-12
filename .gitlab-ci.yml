@@ -67,7 +67,6 @@ selenium-test-job:
     SELENIUM_REMOTE_URL: "http://selenium:4444/wd/hub"
   
   script:
-    # Wir sind dank before_script bereits in teilzeit-ausbildungsrechner
     - echo "Baue Projekt für Selenium-E2E..."
     - npm run build
 

@@ -1,4 +1,3 @@
-// src/selenium/tzr-scenario2-lukas.e2e.js
 import {
   createDriver,
   waitVisibleById,
@@ -10,90 +9,113 @@ import {
 const BASE_URL = process.env.TZR_BASE_URL ?? 'http://localhost:5173';
 
 export async function runScenarioLukas() {
+  // WebDriver erstellen (lokal oder CI-Remote)
   const driver = await createDriver();
 
   try {
-    console.log('Starte Szenario 2 – Lukas (19), Einzelhandel, Teilzeit 30h, 42 Monate.');
+    console.log(
+      'Starte Szenario 2 – Lukas (19), Einzelhandel, Teilzeit 30h, 42 Monate.'
+    );
 
-    // Seite öffnen
+    // Startseite öffnen
     await driver.get(`${BASE_URL}/`);
-    await driver.sleep(500);
+    await driver.sleep(500); // kurze Stabilisierung nach Seitenstart
 
-    // --- STEP 1: Basisdaten ---
+    // ===== STEP 1: Basisdaten =====
     console.log('Step 1: Basisdaten ausfüllen');
 
-    // Vollzeit: 40 Stunden
+    // Vertragliche Vollzeitstunden
     await typeNumberById(driver, 'vollzeitstunden', 40);
 
-    // Teilzeit: 30 Stunden
+    // Teilzeit-Wochenstunden
     await typeNumberById(driver, 'wochenstunden', 30);
 
-    // Ausbildungsdauer: 42 Monate
-    const ausbildungsdauerSelect = await waitVisibleById(driver, 'ausbildungsdauer');
+    // Reguläre Ausbildungsdauer in Monaten
+    const ausbildungsdauerSelect = await waitVisibleById(
+      driver,
+      'ausbildungsdauer'
+    );
     await ausbildungsdauerSelect.sendKeys('42');
 
-    // Direkt in Teilzeit starten
+    // Ausbildung startet direkt in Teilzeit
     await clickRadioByNameAndValue(driver, 'part-time-start-radio', '0');
 
-    // Weiter zu Step 2
+    // Wechsel zu Step 2
     await clickButtonById(driver, 'next-btn-1');
 
-    // --- STEP 2: Verkürzungsgründe ---
+    // ===== STEP 2: Verkürzungsgründe =====
     console.log('Step 2: Verkürzungsfaktoren setzen');
+
+    // Sicherstellen, dass Step 2 sichtbar ist
     await waitVisibleById(driver, 'step-2');
 
-    // Lukas ist 19 → NICHT über 21
+    // Lukas ist 19 → nicht über 21
     await clickRadioByNameAndValue(driver, 'age-radio', '0');
 
-    // Abitur
+    // Schulabschluss: Abitur
     await clickRadioByNameAndValue(driver, 'school-finish-radio', '12');
 
-    // Praktikum im Verkauf → relevante Berufserfahrung
+    // Relevante Berufserfahrung: Praktikum im Verkauf
     await clickRadioByNameAndValue(driver, 'experience-radio', '12');
 
     // Keine abgeschlossene Ausbildung
     await clickRadioByNameAndValue(driver, 'apprenticeship-radio', '0');
 
-    // Kein Studium (nicht erwähnt)
+    // Kein Studium (im Szenario nicht vorhanden)
     await clickRadioByNameAndValue(driver, 'study-radio', '0');
 
     // Keine Kinder
     await clickRadioByNameAndValue(driver, 'child-care-radio', '0');
 
-    // Keine Pflege Angehörige
+    // Keine Pflege von Angehörigen
     await clickRadioByNameAndValue(driver, 'family-care-radio', '0');
 
-    // Weiter zu Step 3
+    // Wechsel zu Step 3
     await clickButtonById(driver, 'next-btn-2');
 
-    // --- STEP 3: Ergebnisse ---
+    // ===== STEP 3: Ergebnisse =====
     console.log('Step 3: Ergebnisse prüfen');
+
+    // Sicherstellen, dass Ergebnis-Seite geladen ist
     await waitVisibleById(driver, 'step-3');
 
-    const finalDurationEl = await waitVisibleById(driver, 'final-duration-result', 15_000);
+    // Gesamtausbildungsdauer auslesen
+    const finalDurationEl = await waitVisibleById(
+      driver,
+      'final-duration-result',
+      15_000
+    );
     const finalDurationText = await finalDurationEl.getText();
 
-    console.log('Gesamtausbildungsdauer ab Beginn (Lukas, Szenario 2):', finalDurationText);
+    console.log(
+      'Gesamtausbildungsdauer ab Beginn (Lukas, Szenario 2):',
+      finalDurationText
+    );
 
-    // Details öffnen
+    // Detailansicht öffnen
     await clickButtonById(driver, 'toggle-details-btn');
 
+    // Verkürzungs- und Verlängerungswerte auslesen
     const shorteningEl = await waitVisibleById(driver, 'shortening-card-value');
     const extensionEl = await waitVisibleById(driver, 'extension-card-value');
 
     console.log('Gesamte Verkürzung (Monate):', await shorteningEl.getText());
-    console.log('Verlängerung durch Teilzeit (Monate):', await extensionEl.getText());
+    console.log(
+      'Verlängerung durch Teilzeit (Monate):',
+      await extensionEl.getText()
+    );
 
     console.log('Szenario 2 – Testlauf erfolgreich abgeschlossen.');
   } catch (err) {
+    // Fehler im Szenario → Pipeline/Testlauf als fehlgeschlagen markieren
     console.error('Szenario 2 – Test fehlgeschlagen:', err);
     process.exitCode = 1;
   } finally {
+    // Browser immer sauber schließen
     await driver.quit();
   }
 }
 
-// Direkt ausführbar (für npm script / Pipeline)
 runScenarioLukas().catch((err) => {
   console.error('Szenario 2 – Unbehandelter Fehler:', err);
   process.exitCode = 1;

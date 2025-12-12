@@ -1,4 +1,3 @@
-// src/selenium/tzr-scenario3-paul.e2e.js
 import {
   createDriver,
   waitVisibleById,
@@ -99,7 +98,6 @@ export async function runScenarioPaul() {
   }
 }
 
-// Direkt ausführbar (für npm script / Pipeline)
 runScenarioPaul().catch((err) => {
   console.error('Szenario 3 – Unbehandelter Fehler:', err);
   process.exitCode = 1;

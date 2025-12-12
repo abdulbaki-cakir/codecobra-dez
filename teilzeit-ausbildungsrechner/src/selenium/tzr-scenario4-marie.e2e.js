@@ -9,6 +9,7 @@ import {
 const BASE_URL = process.env.TZR_BASE_URL ?? 'http://localhost:5173';
 
 export async function runScenarioMarie() {
+  // WebDriver erstellen (lokal oder CI-Remote)
   const driver = await createDriver();
 
   try {
@@ -95,7 +96,6 @@ export async function runScenarioMarie() {
   }
 }
 
-// Direkt ausführbar
 runScenarioMarie().catch((err) => {
   console.error('Szenario 4 – Unbehandelter Fehler:', err);
   process.exitCode = 1;
