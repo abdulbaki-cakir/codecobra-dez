@@ -1,21 +1,20 @@
-import translations from "../translations.json";
+// language.js
 
 const LANGUAGE_STORAGE_KEY = "tzr-language";
 const LANGUAGE_EVENT = "app:language-changed";
+
+// Simple memory cache to avoid network requests if we switch back and forth
+const loadedLanguages = {};
+
 let currentLanguage = "de";
+let currentTranslations = {};
 
-function getTranslationsFor(lang) {
-  return translations[lang] || translations.de || {};
-}
-
-function dispatchLanguageChanged(lang) {
-  const event = new CustomEvent(LANGUAGE_EVENT, { detail: { language: lang } });
-  document.dispatchEvent(event);
-}
-
+/**
+ * Synchronous helper to get a specific string from memory.
+ */
 export function getTranslation(key, lang = currentLanguage) {
-  const languageData = getTranslationsFor(lang);
-  return languageData[key] ?? translations.de?.[key] ?? "";
+  const sourceData = loadedLanguages[lang] || currentTranslations;
+  return sourceData[key] ?? "";
 }
 
 export function onLanguageChange(callback) {
@@ -26,52 +25,76 @@ export function onLanguageChange(callback) {
   });
 }
 
-export function applyTranslations(lang = currentLanguage) {
-  currentLanguage = translations[lang] ? lang : "de";
+/**
+ * Main Logic: Fetches JSON and updates the DOM
+ * (Combined approach: Simple Fetch + Robust UI Updates)
+ */
+export async function applyTranslations(lang = currentLanguage) {
+  try {
+    // 1. Fetch Data (Logic from your short code, with added caching)
+    let translations = loadedLanguages[lang];
 
-  // ÄNDERUNG: sessionStorage statt localStorage
-  sessionStorage.setItem(LANGUAGE_STORAGE_KEY, currentLanguage);
-
-  const languageData = getTranslationsFor(currentLanguage);
-
-  const elements = document.querySelectorAll("[data-translate-key]");
-  elements.forEach((el) => {
-    const key = el.dataset.translateKey;
-    if (!key) return;
-
-    const translation =
-      languageData[key] ?? translations.de?.[key] ?? el.textContent;
-    if (!translation) return;
-
-    const attrTarget = el.dataset.translateAttr;
-    const mode = el.dataset.translateMode;
-
-    if (attrTarget) {
-      el.setAttribute(attrTarget, translation);
-    } else if (mode === "html") {
-      el.innerHTML = translation;
-    } else {
-      el.textContent = translation;
+    if (!translations) {
+      const response = await fetch(`lang/${lang}.json`);
+      if (!response.ok) {
+        console.error(`Language file not found: lang/${lang}.json`);
+        return;
+      }
+      translations = await response.json();
+      loadedLanguages[lang] = translations; // Save to cache
     }
-  });
 
-  const htmlLang = currentLanguage.startsWith("de")
-    ? "de"
-    : currentLanguage.split("_")[0] || "de";
-  document.documentElement.setAttribute("lang", htmlLang);
+    // 2. Update State
+    currentLanguage = lang;
+    currentTranslations = translations;
+    sessionStorage.setItem(LANGUAGE_STORAGE_KEY, currentLanguage);
 
-  const easyCheckbox = document.getElementById("easy-language-checkbox");
-  if (easyCheckbox) {
-    easyCheckbox.checked = currentLanguage === "de_easy";
+    // 3. Update DOM (Logic from your new code to handle attributes/HTML)
+    document.querySelectorAll("[data-translate-key]").forEach((el) => {
+      const key = el.dataset.translateKey;
+      const translation = translations[key];
+
+      if (!translation) return;
+
+      const attrTarget = el.dataset.translateAttr;
+      const mode = el.dataset.translateMode;
+
+      if (attrTarget) {
+        // e.g. placeholder="Search..."
+        el.setAttribute(attrTarget, translation);
+      } else if (mode === "html") {
+        // e.g. <b>Bold</b> text
+        el.innerHTML = translation;
+      } else {
+        // Standard text
+        el.textContent = translation;
+      }
+    });
+
+    // 4. Update HTML Lang Attribute
+    const htmlLang = currentLanguage.startsWith("de") ? "de" : "en";
+    document.documentElement.setAttribute("lang", htmlLang);
+
+    // 5. Update Easy Language Checkbox (Specific to your app)
+    const easyCheckbox = document.getElementById("easy-language-checkbox");
+    if (easyCheckbox) {
+      easyCheckbox.checked = currentLanguage === "de_easy";
+    }
+
+    // 6. Notify other parts of the app
+    const event = new CustomEvent(LANGUAGE_EVENT, {
+      detail: { language: lang },
+    });
+    document.dispatchEvent(event);
+  } catch (error) {
+    console.error("Error applying translations:", error);
   }
-
-  dispatchLanguageChanged(currentLanguage);
 }
 
 /**
- * Aktiviert das Sprach-Dropdown und schaltet die Variante "Leichte Sprache" um.
+ * Initializes the dropdowns and click listeners
  */
-function initializeLanguageSwitcher() {
+export function initializeLanguageSwitcher() {
   const langToggle = document.getElementById("language-toggle");
   const langMenu = document.getElementById("language-menu");
   const languageOptions = document.querySelectorAll(".language-option");
@@ -80,63 +103,64 @@ function initializeLanguageSwitcher() {
   const easyMenu = document.getElementById("easy-language-menu");
   const easyCheckbox = document.getElementById("easy-language-checkbox");
 
-  // ÄNDERUNG: sessionStorage statt localStorage beim Laden
+  // Load stored language on startup
   const storedLang = sessionStorage.getItem(LANGUAGE_STORAGE_KEY);
   applyTranslations(storedLang || "de");
 
+  // --- Standard Language Menu ---
   if (langToggle && langMenu) {
-    langToggle.addEventListener("click", function (event) {
-      event.preventDefault();
-      event.stopPropagation();
+    langToggle.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
       if (easyMenu) easyMenu.classList.remove("show");
       langMenu.classList.toggle("show");
     });
 
     languageOptions.forEach((option) => {
-      option.addEventListener("click", function (event) {
-        event.preventDefault();
+      option.addEventListener("click", function (e) {
+        e.preventDefault();
+        // Grabs text inside span (e.g., "en" or "de")
+        const langSpan = this.querySelector("span");
+        if (langSpan) {
+          applyTranslations(langSpan.textContent.toLowerCase().trim());
+        }
         langMenu.classList.remove("show");
       });
     });
   }
 
+  // --- Easy Language Menu ---
   if (easyToggle && easyMenu && easyCheckbox) {
-    easyToggle.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
+    easyToggle.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
       if (langMenu) langMenu.classList.remove("show");
       easyMenu.classList.toggle("show");
     });
 
-    easyMenu.addEventListener("click", (event) => {
-      event.stopPropagation();
-    });
+    easyMenu.addEventListener("click", (e) => e.stopPropagation());
 
-    easyCheckbox.addEventListener("change", (event) => {
-      const isChecked = event.target.checked;
-      const nextLanguage = isChecked ? "de_easy" : "de";
+    easyCheckbox.addEventListener("change", (e) => {
+      const nextLanguage = e.target.checked ? "de_easy" : "de";
       applyTranslations(nextLanguage);
     });
   }
 
-  window.addEventListener("click", function (event) {
+  // --- Global Click to Close ---
+  window.addEventListener("click", (e) => {
     if (
       langMenu &&
-      langToggle &&
-      !langToggle.contains(event.target) &&
-      !langMenu.contains(event.target)
+      !langToggle.contains(e.target) &&
+      !langMenu.contains(e.target)
     ) {
       langMenu.classList.remove("show");
     }
     if (
       easyMenu &&
-      easyToggle &&
-      !easyToggle.contains(event.target) &&
-      !easyMenu.contains(event.target)
+      !easyToggle.contains(e.target) &&
+      !easyMenu.contains(e.target)
     ) {
       easyMenu.classList.remove("show");
     }
   });
 }
-
-export { initializeLanguageSwitcher };
