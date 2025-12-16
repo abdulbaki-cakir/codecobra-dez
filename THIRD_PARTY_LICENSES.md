@@ -82,6 +82,8 @@ Source: https://github.com/lipis/flag-icons
 License: MIT  
 Copyright (c) flag-icons contributors
 
+Used icons: de.svg, gb.svg
+
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -106,9 +108,9 @@ THE SOFTWARE.
 Source: https://www.flaticon.com  
 License: Flaticon Free License
 
-Icons used in this project were downloaded from Flaticon.
-Attribution is provided in accordance with the Flaticon Free License.
+Used icons: book-alt.svg, chat-arrow-grow.svg, globe.svg, house.svg, settings-sliders.svg, time-quarter-to.svg
 
-If you are an icon author and believe proper attribution is missing,
+Icons used in this project were downloaded from Flaticon.  
+Attribution is provided in accordance with the Flaticon Free License.  
+If you are an icon author and believe proper attribution is missing,  
 please contact the project maintainers.
-
